@@ -11,7 +11,7 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import pe.edu.ulima.ocholocos.R
 
-class CardTable(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
+class CardTableView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
     private var size : Int = 0
 
     override fun onDraw(canvas: Canvas?) {

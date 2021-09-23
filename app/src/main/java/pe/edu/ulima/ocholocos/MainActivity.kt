@@ -6,12 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.DragEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import pe.edu.ulima.ocholocos.shared.Deck
-import pe.edu.ulima.ocholocos.shared.JACK
-import pe.edu.ulima.ocholocos.shared.QUEEN
+import androidx.core.view.get
+import pe.edu.ulima.ocholocos.models.CardFactory
+import pe.edu.ulima.ocholocos.shared.Cards
 import pe.edu.ulima.ocholocos.shared.KING
 import pe.edu.ulima.ocholocos.views.*
 
@@ -22,10 +21,11 @@ class MainActivity : AppCompatActivity() {
     private var currentPlayerIndex = 0
     private var gameFlow = 1
     private lateinit var player : TextView
-    private lateinit var currentPlayerHand : PlayerHand
-    private lateinit var playersHands : List<PlayerHand>
+    private lateinit var currentPlayerHandView : PlayerHandView
+    private lateinit var playersHandViews : List<PlayerHandView>
     private lateinit var drawCardLayout : ConstraintLayout
     private lateinit var drawnCardLayout : RelativeLayout
+    private lateinit var deck : DeckView
     private lateinit var butPlay : Button
     private lateinit var butDraw : Button
     private lateinit var butDrawFromDeck : Button
@@ -33,110 +33,83 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        this.deck = findViewById<DeckView>(R.id.ivi_deck).fill()
+        val playedCardsLayout = findViewById<PlayedCardsView>(R.id.playedCardsLayout).putCard(this.deck.getCard())
 
-        val cardTable = findViewById<CardTable>(R.id.cardTable)
-        val playedCardsLayout = findViewById<PlayedCards>(R.id.playedCardsLayout)
-
-        this.playersHands = listOf(
-            findViewById(R.id.playerOneHand),
-            findViewById(R.id.playerTwoHand),
-            findViewById(R.id.playerThreeHand)
+        this.playersHandViews = listOf(
+            findViewById<PlayerHandView>(R.id.playerOneHand).getHand(deck.getPlayerHand()),
+            findViewById<PlayerHandView>(R.id.playerTwoHand).getHand(deck.getPlayerHand()),
+            findViewById<PlayerHandView>(R.id.playerThreeHand).getHand(deck.getPlayerHand())
         )
+        this.currentPlayerHandView = playersHandViews[0]
 
         this.player = findViewById(R.id.tviPlayer)
-        this.currentPlayerHand = playersHands[0]
         this.drawCardLayout = findViewById(R.id.claDrawCard)
         this.drawnCardLayout = findViewById(R.id.rlaDrawnCard)
         this.butPlay = findViewById(R.id.butPlay)
         this.butDraw = findViewById(R.id.butDraw)
         this.butDrawFromDeck = findViewById(R.id.butDrawCardFromDeck)
 
-        cardTable.setOnDragListener{ _ , e ->
-            when (e.action) {
-                DragEvent.ACTION_DRAG_STARTED ->
-                    e.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
-                DragEvent.ACTION_DRAG_ENTERED -> true
-                DragEvent.ACTION_DRAG_LOCATION -> true
-                DragEvent.ACTION_DRAG_EXITED -> true
-                DragEvent.ACTION_DROP -> {
-                    val item : ClipData.Item = e.clipData.getItemAt(0)
-                    val cardIndex : Int = item.text.toString().toInt()
-                    val card : Card = currentPlayerHand.getCard(cardIndex)
-                    if (playedCardsLayout.cardMatchesNumberOrColor(card)) {
-                        val cardPlayed = currentPlayerHand.playCard(cardIndex)
-                        playedCardsLayout.putCard(cardPlayed)
-                        nextPlayer()
-                        triggerCardMechanic(card.number)
-                        true
-                    }
-                    false
-                }
-                else -> true
-            }
-        }
-
         this.butPlay.setOnClickListener{ _ : View ->
-            val card : Card = this.drawnCardLayout.getChildAt(0) as Card
+            val cardView : CardView = this.drawnCardLayout.getChildAt(0) as CardView
             this.drawnCardLayout.removeViewAt(0)
-            playedCardsLayout.putCard(card)
-            triggerCardMechanic(card.number)
+            playedCardsLayout.putCard(cardView)
+            triggerCardMechanic(cardView.number)
         }
 
         this.butDraw.setOnClickListener{ _ : View ->
-            val card : Card = this.drawnCardLayout.getChildAt(0) as Card
+            val cardView : CardView = this.drawnCardLayout.getChildAt(0) as CardView
             this.drawnCardLayout.removeViewAt(0)
-            currentPlayerHand.DrawCard(card)
+            currentPlayerHandView.getCard(cardView)
         }
 
         this.butDrawFromDeck.setOnClickListener{ _ : View ->
-            currentPlayerHand.DrawCard()
+            currentPlayerHandView.getCard(deck.getCard())
         }
     }
 
     private fun nextPlayer() {
-        currentPlayerHand.visibility = View.GONE
+        currentPlayerHandView.visibility = View.GONE
         currentPlayerIndex = (currentPlayerIndex + gameFlow) % numberOfPlayers
-        currentPlayerHand = playersHands[currentPlayerIndex]
+        currentPlayerHandView = playersHandViews[currentPlayerIndex]
         player.text = "Jugador ${currentPlayerIndex + 1}"
-        currentPlayerHand.visibility = View.VISIBLE
+        currentPlayerHandView.visibility = View.VISIBLE
     }
 
     fun triggerCardMechanic(cardNumber: Int) {
-        when(cardNumber) {
+        /*when(cardNumber) {
             KING -> drawThreeCards(3 * drawMultiplier)
-        }
+        }*/
     }
 
-    fun drawThreeCards(toDraw : Int, drawn : Int = 0) {
+    /*fun drawThreeCards(toDraw : Int, drawn : Int = 0) {
         hideDrawCardLayout()
         if (this.drawnCardLayout.childCount > 0) this.drawnCardLayout.removeAllViews()
-//        this.butPlay.isEnabled = false
-        var card : Card = cardFactory.getCard(Deck.getCard())
+        var cardView : CardView = cardFactory.getCard(Cards.getCard())
         var drawn = drawn + 1
-        if (card.number == KING) {
-            card.layoutParams = getCardLayoutParams()
-//            this.butPlay.isEnabled = true
+        if (cardView.number == KING) {
+            cardView.layoutParams = getCardLayoutParams()
             this.drawMultiplier++
-            this.drawnCardLayout.addView(card)
+            this.drawnCardLayout.addView(cardView)
             showDrawCardLayout()
         } else if (drawn < toDraw) {
-            this.currentPlayerHand.DrawCard(card)
+            this.currentPlayerHandView.DrawCard(cardView)
             drawThreeCards(toDraw, drawn)
         } else {
-            this.currentPlayerHand.DrawCard(card)
+            this.currentPlayerHandView.DrawCard(cardView)
             this.drawMultiplier = 1
         }
-    }
+    }*/
 
     private fun showDrawCardLayout(){
         this.drawCardLayout.visibility = View.VISIBLE
-        this.currentPlayerHand.visibility = View.GONE
+        this.currentPlayerHandView.visibility = View.GONE
         this.butDrawFromDeck.visibility = View.GONE
     }
 
     private fun hideDrawCardLayout() {
         this.drawCardLayout.visibility = View.GONE
-        this.currentPlayerHand.visibility = View.VISIBLE
+        this.currentPlayerHandView.visibility = View.VISIBLE
         this.butDrawFromDeck.visibility = View.VISIBLE
     }
 

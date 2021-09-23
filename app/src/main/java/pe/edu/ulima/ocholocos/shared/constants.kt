@@ -66,3 +66,7 @@ const val HAND_SIZE = 8
 const val JACK = 11
 const val QUEEN = 12
 const val KING = 13
+
+enum class DRAW_STATUS {
+    DONE, COUNTER, DECK_DRAW
+}

@@ -2,7 +2,7 @@ package pe.edu.ulima.ocholocos.shared
 
 import kotlin.random.Random
 
-object Deck {
+object Cards {
     private val cards : List<Int> = listOf(
         ACE_OF_HEARTS,
         TWO_OF_HEARTS,
@@ -58,7 +58,7 @@ object Deck {
         KING_OF_SPADES
     )
 
-    fun getPlayerHand() : List<Int> = cards.shuffled().take(HAND_SIZE).toList()
+    fun getDeck() : List<Int> = cards.shuffled()
 
     fun getCard() : Int = cards[Random.nextInt(cards.size)]
 }

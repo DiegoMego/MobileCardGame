@@ -1,4 +1,4 @@
-package pe.edu.ulima.ocholocos.views
+package pe.edu.ulima.ocholocos.models
 
 import android.graphics.Canvas
 import android.graphics.Color
@@ -9,7 +9,7 @@ import android.view.View
 class CardShadow(v: View) : View.DragShadowBuilder(v) {
     private val shadow = ColorDrawable(Color.LTGRAY)
 
-    override fun onProvideShadowMetrics(size: Point, touch: Point) {
+    /*override fun onProvideShadowMetrics(size: Point, touch: Point) {
         val width : Int = view.width
         val height : Int = view.height
 
@@ -20,5 +20,5 @@ class CardShadow(v: View) : View.DragShadowBuilder(v) {
 
     override fun onDrawShadow(canvas: Canvas) {
         shadow.draw(canvas)
-    }
+    }*/
 }
