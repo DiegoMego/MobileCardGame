@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.LinearLayout
 import pe.edu.ulima.ocholocos.models.CardFactory
 import pe.edu.ulima.ocholocos.models.CardShadow
+import pe.edu.ulima.ocholocos.shared.PLAYER_STATUS
+import pe.edu.ulima.ocholocos.shared.Status
 
 class PlayerHandView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     private val cardFactory : CardFactory = CardFactory(context)
@@ -27,9 +29,9 @@ class PlayerHandView(context: Context, attrs: AttributeSet?) : LinearLayout(cont
                 arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
                 item
             )
+
             val shadow = CardShadow(v)
 
-            Log.i("Click", "4")
             v.startDrag(
                 dragData,
                 shadow,
@@ -43,9 +45,12 @@ class PlayerHandView(context: Context, attrs: AttributeSet?) : LinearLayout(cont
     init {
         this.setOnDragListener{ _ , e ->
             when (e.action) {
+                DragEvent.ACTION_DRAG_STARTED ->
+                    e.clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 DragEvent.ACTION_DRAG_ENDED -> {
                     if (e.result) {
                         removeViewAt(cardIndex!!)
+                        cardIndex = null
                     }
                     false
                 }
@@ -58,7 +63,7 @@ class PlayerHandView(context: Context, attrs: AttributeSet?) : LinearLayout(cont
         super.onDraw(canvas)
     }
 
-    fun getHand(cards : ArrayList<CardView>) : PlayerHandView {
+    fun getCards(cards : ArrayList<CardView>) : PlayerHandView {
         cards.forEach { card : CardView ->
             card.setOnLongClickListener(listener)
             addView(card)
@@ -71,12 +76,5 @@ class PlayerHandView(context: Context, attrs: AttributeSet?) : LinearLayout(cont
         val mFade : Fade = Fade(Fade.IN)
         TransitionManager.beginDelayedTransition(this, mFade)
         this.addView(cardView, 0)
-    }
-
-    fun playCard(index : Int) : CardView {
-        val card : CardView = this.getChildAt(index) as CardView
-        card.setOnLongClickListener(null)
-        this.removeViewAt(index)
-        return card
     }
 }

@@ -9,7 +9,7 @@ import android.view.DragEvent
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import pe.edu.ulima.ocholocos.models.CardFactory
-import pe.edu.ulima.ocholocos.shared.Cards
+import pe.edu.ulima.ocholocos.shared.Status
 
 class PlayedCardsView(context: Context, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
     private val cardFactory : CardFactory = CardFactory(context)
@@ -26,11 +26,11 @@ class PlayedCardsView(context: Context, attrs: AttributeSet?) : RelativeLayout(c
                 DragEvent.ACTION_DROP -> {
                     val item : ClipData.Item = e.clipData.getItemAt(0)
                     val cardId : Int = item.text.toString().toInt()
-                    val cardView : CardView = cardFactory.getCard(cardId)
-                    if (cardView.numberMatch(topCardView!!) || cardView.suitMatch(topCardView!!)) {
-                        putCard(cardView)
-                    }
-                    false
+                    val cardPlayed : CardView = cardFactory.getCard(cardId)
+                    if (!cardPlayed.numberMatch(topCardView!!) && !cardPlayed.suitMatch(topCardView!!)) false
+                    Status.setStatus(cardPlayed, topCardView!!)
+                    putCard(cardPlayed)
+                    true
                 }
                 DragEvent.ACTION_DRAG_EXITED -> true
                 DragEvent.ACTION_DRAG_ENDED -> true
@@ -56,8 +56,8 @@ class PlayedCardsView(context: Context, attrs: AttributeSet?) : RelativeLayout(c
 
     private fun setCardParams(cardView : CardView){
         cardView.layoutParams = LinearLayout.LayoutParams(
-            120,
-            120
+            200,
+            200
         )
         cardView.rotation = this.accRotation
         this.accRotation = (this.accRotation + 30) % 180

@@ -15,9 +15,9 @@ class CardFactory(context: Context) {
     fun getCard(id: Int) : CardView {
         val number : Int = id % 100
         when (id) {
-            ACE_OF_HEARTS -> return CardView(ACE_OF_HEARTS, HEARTS,number, R.drawable.heartsace, context)
-            TWO_OF_HEARTS -> return CardView(TWO_OF_HEARTS, HEARTS,number, R.drawable.heartstwo, context)
-            THREE_OF_HEARTS -> return CardView(THREE_OF_HEARTS, HEARTS,number, R.drawable.heartsthree, context)
+            ACE_OF_HEARTS -> return CardView(ACE_OF_HEARTS, HEARTS, number, R.drawable.heartsace, context)
+            TWO_OF_HEARTS -> return CardView(TWO_OF_HEARTS, HEARTS, number, R.drawable.heartstwo, context)
+            THREE_OF_HEARTS -> return CardView(THREE_OF_HEARTS, HEARTS, number, R.drawable.heartsthree, context)
             FOUR_OF_HEARTS -> return CardView(FOUR_OF_HEARTS, HEARTS,number, R.drawable.heartsfour, context)
             FIVE_OF_HEARTS -> return CardView(FIVE_OF_HEARTS, HEARTS,number, R.drawable.heartsfive, context)
             SIX_OF_HEARTS -> return CardView(SIX_OF_HEARTS, HEARTS,number, R.drawable.heartssix, context)

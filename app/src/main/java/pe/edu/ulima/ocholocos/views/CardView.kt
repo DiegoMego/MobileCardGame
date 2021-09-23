@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
-import pe.edu.ulima.ocholocos.R
 
 class CardView(cardId : Int, type : Int, number : Int, image : Int, context: Context) : AppCompatImageView(context) {
     val cardId : Int = cardId
@@ -14,8 +13,7 @@ class CardView(cardId : Int, type : Int, number : Int, image : Int, context: Con
     val image: Int = image
 
     init {
-        //this.setImageResource(image)
-        this.setImageResource(R.drawable.heartsking)
+        this.setImageResource(image)
         this.layoutParams = ViewGroup.LayoutParams(
             200,
             LinearLayout.LayoutParams.MATCH_PARENT

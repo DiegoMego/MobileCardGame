@@ -1,25 +1,20 @@
 package pe.edu.ulima.ocholocos
 
-import android.content.ClipData
-import android.content.ClipDescription
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.DragEvent
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.get
+import androidx.lifecycle.Observer
 import pe.edu.ulima.ocholocos.models.CardFactory
-import pe.edu.ulima.ocholocos.shared.Cards
-import pe.edu.ulima.ocholocos.shared.KING
+import pe.edu.ulima.ocholocos.shared.GAME_STATUS
+import pe.edu.ulima.ocholocos.shared.NUMBER_OF_PLAYERS
+import pe.edu.ulima.ocholocos.shared.PLAYER_STATUS
+import pe.edu.ulima.ocholocos.shared.Status
 import pe.edu.ulima.ocholocos.views.*
 
-class MainActivity : AppCompatActivity() {
-    private val cardFactory : CardFactory = CardFactory(this)
-    private val numberOfPlayers = 3
-    private var drawMultiplier = 1
+class GameActivity : AppCompatActivity() {
     private var currentPlayerIndex = 0
-    private var gameFlow = 1
     private lateinit var player : TextView
     private lateinit var currentPlayerHandView : PlayerHandView
     private lateinit var playersHandViews : List<PlayerHandView>
@@ -29,27 +24,66 @@ class MainActivity : AppCompatActivity() {
     private lateinit var butPlay : Button
     private lateinit var butDraw : Button
     private lateinit var butDrawFromDeck : Button
+    private lateinit var butEndTurn : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        this.deck = findViewById<DeckView>(R.id.ivi_deck).fill()
-        val playedCardsLayout = findViewById<PlayedCardsView>(R.id.playedCardsLayout).putCard(this.deck.getCard())
+        setContentView(R.layout.activity_game)
 
+        //region view variables
+
+        //deck
+        this.deck = findViewById<DeckView>(R.id.ivi_deck).fill()
+
+        //players
+        val playedCardsLayout = findViewById<PlayedCardsView>(R.id.playedCardsLayout).putCard(this.deck.getCard())
         this.playersHandViews = listOf(
-            findViewById<PlayerHandView>(R.id.playerOneHand).getHand(deck.getPlayerHand()),
-            findViewById<PlayerHandView>(R.id.playerTwoHand).getHand(deck.getPlayerHand()),
-            findViewById<PlayerHandView>(R.id.playerThreeHand).getHand(deck.getPlayerHand())
+            findViewById<PlayerHandView>(R.id.playerOneHand).getCards(deck.getPlayerHand()),
+            findViewById<PlayerHandView>(R.id.playerTwoHand).getCards(deck.getPlayerHand()),
+            findViewById<PlayerHandView>(R.id.playerThreeHand).getCards(deck.getPlayerHand())
         )
         this.currentPlayerHandView = playersHandViews[0]
 
+        //player name text
         this.player = findViewById(R.id.tviPlayer)
+
+        //played cards in center
         this.drawCardLayout = findViewById(R.id.claDrawCard)
         this.drawnCardLayout = findViewById(R.id.rlaDrawnCard)
+
+        //buttons
         this.butPlay = findViewById(R.id.butPlay)
         this.butDraw = findViewById(R.id.butDraw)
         this.butDrawFromDeck = findViewById(R.id.butDrawCardFromDeck)
+        this.butEndTurn = findViewById(R.id.butEndTurn)
+        //endregion
 
+        //region player status
+        Status.player.value = PLAYER_STATUS.START_OF_TURN
+
+        Status.player.observe(this, Observer {
+            when (it) {
+                PLAYER_STATUS.START_OF_TURN -> {
+                    butEndTurn.isEnabled = false
+                    currentPlayerHandView.visibility = View.VISIBLE
+                    if (Status.game == GAME_STATUS.KING_PLAYED) {
+                        //Draw 3 cards
+                    }
+                }
+                PLAYER_STATUS.ACTIVE -> {
+                    //Show end of turn button
+                    butEndTurn.isEnabled = true
+                }
+                PLAYER_STATUS.END_OF_TURN -> {
+                    //Show end of turn button
+                    currentPlayerHandView.visibility = View.GONE
+                    butEndTurn.isEnabled = true
+                }
+            }
+        })
+        //endregion
+
+        //region listeners
         this.butPlay.setOnClickListener{ _ : View ->
             val cardView : CardView = this.drawnCardLayout.getChildAt(0) as CardView
             this.drawnCardLayout.removeViewAt(0)
@@ -66,14 +100,19 @@ class MainActivity : AppCompatActivity() {
         this.butDrawFromDeck.setOnClickListener{ _ : View ->
             currentPlayerHandView.getCard(deck.getCard())
         }
+
+        this.butEndTurn.setOnClickListener{ _ : View ->
+            nextPlayer()
+        }
+        //endregion
     }
 
     private fun nextPlayer() {
         currentPlayerHandView.visibility = View.GONE
-        currentPlayerIndex = (currentPlayerIndex + gameFlow) % numberOfPlayers
+        currentPlayerIndex = (currentPlayerIndex + Status.flow) % NUMBER_OF_PLAYERS
         currentPlayerHandView = playersHandViews[currentPlayerIndex]
         player.text = "Jugador ${currentPlayerIndex + 1}"
-        currentPlayerHandView.visibility = View.VISIBLE
+        Status.player.value = PLAYER_STATUS.START_OF_TURN
     }
 
     fun triggerCardMechanic(cardNumber: Int) {

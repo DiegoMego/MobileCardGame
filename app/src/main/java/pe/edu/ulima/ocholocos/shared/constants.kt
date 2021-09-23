@@ -67,6 +67,15 @@ const val JACK = 11
 const val QUEEN = 12
 const val KING = 13
 
-enum class DRAW_STATUS {
-    DONE, COUNTER, DECK_DRAW
+const val NUMBER_OF_PLAYERS = 3
+
+const val TO_NEXT = 1
+const val TO_PREVIOUS = -1
+
+enum class GAME_STATUS {
+    CARD_PLAYED, KING_PLAYED, QUEEN_PLAYED, JACK_PLAYED
+}
+
+enum class PLAYER_STATUS {
+    START_OF_TURN, ACTIVE, END_OF_TURN
 }

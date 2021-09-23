@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".GameActivity">
 
     <ImageView
         android:id="@+id/game_background"
@@ -76,11 +76,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/cardTableLayout"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
         android:text="Jugador 1"
         android:textColor="@color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <Button
+        android:id="@+id/butEndTurn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/cardTableLayout"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:enabled="false"
+        android:text="Fin del Turno"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -95,18 +107,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:clickable="false">
 
             <pe.edu.ulima.ocholocos.views.PlayerHandView
                 android:id="@+id/playerOneHand"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:addStatesFromChildren="true">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                android:orientation="horizontal">
 
             </pe.edu.ulima.ocholocos.views.PlayerHandView>
 
