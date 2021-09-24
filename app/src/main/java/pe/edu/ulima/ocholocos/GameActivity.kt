@@ -7,10 +7,7 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import pe.edu.ulima.ocholocos.models.CardFactory
-import pe.edu.ulima.ocholocos.shared.GAME_STATUS
-import pe.edu.ulima.ocholocos.shared.NUMBER_OF_PLAYERS
-import pe.edu.ulima.ocholocos.shared.PLAYER_STATUS
-import pe.edu.ulima.ocholocos.shared.Status
+import pe.edu.ulima.ocholocos.shared.*
 import pe.edu.ulima.ocholocos.views.*
 
 class GameActivity : AppCompatActivity() {
@@ -19,10 +16,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var currentPlayerHandView : PlayerHandView
     private lateinit var playersHandViews : List<PlayerHandView>
     private lateinit var drawCardLayout : ConstraintLayout
-    private lateinit var drawnCardLayout : RelativeLayout
     private lateinit var deck : DeckView
-    private lateinit var butPlay : Button
-    private lateinit var butDraw : Button
     private lateinit var butDrawFromDeck : Button
     private lateinit var butEndTurn : Button
 
@@ -46,14 +40,9 @@ class GameActivity : AppCompatActivity() {
 
         //player name text
         this.player = findViewById(R.id.tviPlayer)
-
-        //played cards in center
-        this.drawCardLayout = findViewById(R.id.claDrawCard)
-        this.drawnCardLayout = findViewById(R.id.rlaDrawnCard)
+        var playerDrawText = findViewById<TextView>(R.id.tviDrawCards)
 
         //buttons
-        this.butPlay = findViewById(R.id.butPlay)
-        this.butDraw = findViewById(R.id.butDraw)
         this.butDrawFromDeck = findViewById(R.id.butDrawCardFromDeck)
         this.butEndTurn = findViewById(R.id.butEndTurn)
         //endregion
@@ -65,40 +54,43 @@ class GameActivity : AppCompatActivity() {
             when (it) {
                 PLAYER_STATUS.START_OF_TURN -> {
                     butEndTurn.isEnabled = false
+                    this.butDrawFromDeck.isEnabled = true
                     currentPlayerHandView.visibility = View.VISIBLE
                     if (Status.game == GAME_STATUS.KING_PLAYED) {
-                        //Draw 3 cards
+                        Status.drawnCards = 0
+                        playerDrawText.visibility = View.VISIBLE
+                        playerDrawText.text = "Robe ${(Status.drawMultiplier * DRAW_THREE - Status.drawnCards)}"
                     }
                 }
                 PLAYER_STATUS.ACTIVE -> {
                     //Show end of turn button
                     butEndTurn.isEnabled = true
+                    this.butDrawFromDeck.isEnabled = false
                 }
                 PLAYER_STATUS.END_OF_TURN -> {
                     //Show end of turn button
                     currentPlayerHandView.visibility = View.GONE
                     butEndTurn.isEnabled = true
+                    this.butDrawFromDeck.isEnabled = false
                 }
             }
         })
         //endregion
 
         //region listeners
-        this.butPlay.setOnClickListener{ _ : View ->
-            val cardView : CardView = this.drawnCardLayout.getChildAt(0) as CardView
-            this.drawnCardLayout.removeViewAt(0)
-            playedCardsLayout.putCard(cardView)
-            triggerCardMechanic(cardView.number)
-        }
-
-        this.butDraw.setOnClickListener{ _ : View ->
-            val cardView : CardView = this.drawnCardLayout.getChildAt(0) as CardView
-            this.drawnCardLayout.removeViewAt(0)
-            currentPlayerHandView.getCard(cardView)
-        }
-
         this.butDrawFromDeck.setOnClickListener{ _ : View ->
             currentPlayerHandView.getCard(deck.getCard())
+            if (Status.game == GAME_STATUS.KING_PLAYED &&
+                Status.drawnCards < Status.drawMultiplier * DRAW_THREE){
+                Status.drawnCards++
+                playerDrawText.text = "Robe ${(Status.drawMultiplier * DRAW_THREE - Status.drawnCards)}"
+            } else if (Status.game == GAME_STATUS.KING_PLAYED) {
+                Status.player.value = PLAYER_STATUS.ACTIVE
+                playerDrawText.visibility = View.GONE
+            } else {
+                playerDrawText.visibility = View.GONE
+                Status.player.value = PLAYER_STATUS.ACTIVE
+            }
         }
 
         this.butEndTurn.setOnClickListener{ _ : View ->
@@ -113,51 +105,5 @@ class GameActivity : AppCompatActivity() {
         currentPlayerHandView = playersHandViews[currentPlayerIndex]
         player.text = "Jugador ${currentPlayerIndex + 1}"
         Status.player.value = PLAYER_STATUS.START_OF_TURN
-    }
-
-    fun triggerCardMechanic(cardNumber: Int) {
-        /*when(cardNumber) {
-            KING -> drawThreeCards(3 * drawMultiplier)
-        }*/
-    }
-
-    /*fun drawThreeCards(toDraw : Int, drawn : Int = 0) {
-        hideDrawCardLayout()
-        if (this.drawnCardLayout.childCount > 0) this.drawnCardLayout.removeAllViews()
-        var cardView : CardView = cardFactory.getCard(Cards.getCard())
-        var drawn = drawn + 1
-        if (cardView.number == KING) {
-            cardView.layoutParams = getCardLayoutParams()
-            this.drawMultiplier++
-            this.drawnCardLayout.addView(cardView)
-            showDrawCardLayout()
-        } else if (drawn < toDraw) {
-            this.currentPlayerHandView.DrawCard(cardView)
-            drawThreeCards(toDraw, drawn)
-        } else {
-            this.currentPlayerHandView.DrawCard(cardView)
-            this.drawMultiplier = 1
-        }
-    }*/
-
-    private fun showDrawCardLayout(){
-        this.drawCardLayout.visibility = View.VISIBLE
-        this.currentPlayerHandView.visibility = View.GONE
-        this.butDrawFromDeck.visibility = View.GONE
-    }
-
-    private fun hideDrawCardLayout() {
-        this.drawCardLayout.visibility = View.GONE
-        this.currentPlayerHandView.visibility = View.VISIBLE
-        this.butDrawFromDeck.visibility = View.VISIBLE
-    }
-
-    private fun getCardLayoutParams() : RelativeLayout.LayoutParams {
-        var layoutParams = RelativeLayout.LayoutParams(
-            RelativeLayout.LayoutParams.WRAP_CONTENT,
-            RelativeLayout.LayoutParams.WRAP_CONTENT
-        )
-        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
-        return layoutParams
     }
 }

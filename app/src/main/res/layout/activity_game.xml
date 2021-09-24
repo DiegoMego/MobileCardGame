@@ -87,12 +87,12 @@
         android:id="@+id/butEndTurn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@id/cardTableLayout"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
         android:enabled="false"
-        android:text="Fin del Turno"/>
+        android:text="Fin del Turno" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -139,54 +139,15 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/claDrawCard"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-        <RelativeLayout
-            android:id="@+id/rlaDrawnCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-        </RelativeLayout>
-
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <Button
-                android:id="@+id/butPlay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
-                android:text="Jugar" />
-
-            <Button
-                android:id="@+id/butDraw"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
-                android:text="Robar" />
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/tviDrawCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/cardTableLayout"
+        android:layout_centerHorizontal="true"
+        android:text="Robar 3"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/white"
+        android:visibility="gone" />
 
 </RelativeLayout>

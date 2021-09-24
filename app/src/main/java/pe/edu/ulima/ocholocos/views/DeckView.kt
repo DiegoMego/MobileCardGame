@@ -3,7 +3,6 @@ package pe.edu.ulima.ocholocos.views
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
-import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import pe.edu.ulima.ocholocos.models.CardFactory
 import pe.edu.ulima.ocholocos.shared.Cards

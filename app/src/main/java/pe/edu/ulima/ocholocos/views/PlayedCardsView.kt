@@ -9,6 +9,8 @@ import android.view.DragEvent
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import pe.edu.ulima.ocholocos.models.CardFactory
+import pe.edu.ulima.ocholocos.shared.GAME_STATUS
+import pe.edu.ulima.ocholocos.shared.KING
 import pe.edu.ulima.ocholocos.shared.Status
 
 class PlayedCardsView(context: Context, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
@@ -27,10 +29,13 @@ class PlayedCardsView(context: Context, attrs: AttributeSet?) : RelativeLayout(c
                     val item : ClipData.Item = e.clipData.getItemAt(0)
                     val cardId : Int = item.text.toString().toInt()
                     val cardPlayed : CardView = cardFactory.getCard(cardId)
-                    if (!cardPlayed.numberMatch(topCardView!!) && !cardPlayed.suitMatch(topCardView!!)) false
-                    Status.setStatus(cardPlayed, topCardView!!)
-                    putCard(cardPlayed)
-                    true
+                    if (cardPlayed.numberMatch(topCardView!!) || cardPlayed.suitMatch(topCardView!!)) {
+                        Status.setStatus(cardPlayed, topCardView!!)
+                        putCard(cardPlayed)
+                        true
+                    }else{
+                        false
+                    }
                 }
                 DragEvent.ACTION_DRAG_EXITED -> true
                 DragEvent.ACTION_DRAG_ENDED -> true

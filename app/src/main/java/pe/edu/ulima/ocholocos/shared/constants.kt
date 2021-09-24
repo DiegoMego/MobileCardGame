@@ -67,6 +67,8 @@ const val JACK = 11
 const val QUEEN = 12
 const val KING = 13
 
+const val DRAW_THREE = 3
+
 const val NUMBER_OF_PLAYERS = 3
 
 const val TO_NEXT = 1
